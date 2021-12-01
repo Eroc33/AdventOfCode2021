@@ -1,6 +1,6 @@
 param (
-    [string]$day,
-    [string]$part
+    [Parameter(Mandatory = $true)]
+    [string]$day
 )
 Push-Location ./crates/
 cargo generate -v --git ..\..\day_template\ --name $day
