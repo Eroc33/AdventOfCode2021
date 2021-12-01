@@ -7,24 +7,30 @@ use std::{
     str::FromStr,
 };
 
-pub fn input() -> Result<impl BufRead, ()> {
+macro_rules! bail {
+    ($($fmt_args:tt)+) => {
+        return Err(format!($($fmt_args)+).into());
+    };
+}
+
+pub type Error = Box<dyn std::error::Error>;
+
+pub fn input() -> Result<impl BufRead, Error> {
     let filename = match env::args().nth(1) {
         Some(v) => v,
         None => {
-            eprintln!("You must pass a filename as first argument");
-            return Err(());
+            bail!("You must pass a filename as first argument");
         }
     };
     match fs::File::open(filename) {
         Ok(v) => Ok(BufReader::new(v)),
         Err(e) => {
-            eprintln!("Couldn't open input file due to io error: {:?}", e);
-            return Err(());
+            bail!("Couldn't open input file due to io error: {:?}", e);
         }
     }
 }
 
-pub fn input_lines_as<T>() -> Result<Vec<T>, ()>
+pub fn input_lines_as<T>() -> Result<Vec<T>, Error>
 where
     T: FromStr,
     T::Err: Debug,
@@ -35,18 +41,14 @@ where
         .lines()
         .enumerate()
         .map(|(i, line)| {
-            let line = line.map_err(|e| {
-                eprintln!("Failed to read line {:}: {:}", i, e);
-                ()
-            })?;
-            line.parse::<T>().map_err(|e| {
-                eprintln!("Parsing failed on line {:}: {:?}", i, e);
-            })
+            let line = line.map_err(|e| format!("Failed to read line {:}: {:}", i, e))?;
+            line.parse::<T>()
+                .map_err(|e| Error::from(format!("Parsing failed on line {:}: {:?}", i, e)))
         })
         .collect()
 }
 
-pub fn split_parse<L, R>(s: &str, delim: &str) -> Result<(L, R), String>
+pub fn split_parse<L, R>(s: &str, delim: &str) -> Result<(L, R), Error>
 where
     L: FromStr,
     L::Err: Display,
@@ -71,14 +73,12 @@ where
 
 pub fn input_grid<T>(
     map_char: impl Fn(char) -> T,
-) -> Result<(HashMap<[usize; 2], T>, usize, usize), ()> {
+) -> Result<(HashMap<[usize; 2], T>, usize, usize), Error> {
     let mut height = 0;
     let mut width = 0;
     let mut map = HashMap::new();
     for (y, line) in input()?.lines().enumerate() {
-        let line = line.map_err(|e| {
-            eprintln!("Error reading line {}: {}", y, e);
-        })?;
+        let line = line.map_err(|e| format!("Error reading line {}: {}", y, e))?;
         for (x, c) in line.chars().enumerate() {
             map.insert([x, y], map_char(c));
         }
