@@ -13,6 +13,17 @@ macro_rules! bail {
     };
 }
 
+#[macro_export]
+macro_rules! main {
+    ($solution_fn:ident) => {
+        fn main() -> Result<(), advent_of_utils::Error> {
+            let solution = $solution_fn(advent_of_utils::input()?)?;
+            println!("{}", solution);
+            Ok(())
+        }
+    };
+}
+
 pub type Error = Box<dyn std::error::Error>;
 
 pub fn input() -> Result<impl BufRead, Error> {
@@ -36,13 +47,22 @@ where
     T::Err: Debug,
 {
     let reader = input()?;
+    lines_as(reader)
+}
 
+pub fn lines_as<T, R>(reader: R) -> Result<Vec<T>, Error>
+where
+    T: FromStr,
+    T::Err: Debug,
+    R: BufRead,
+{
     reader
         .lines()
         .enumerate()
         .map(|(i, line)| {
             let line = line.map_err(|e| format!("Failed to read line {:}: {:}", i, e))?;
-            line.parse::<T>()
+            line.trim()
+                .parse::<T>()
                 .map_err(|e| Error::from(format!("Parsing failed on line {:}: {:?}", i, e)))
         })
         .collect()
@@ -86,4 +106,12 @@ pub fn input_grid<T>(
         height = height.max(y);
     }
     Ok((map, width, height + 1))
+}
+
+pub fn check_example<'a, F, T>(solution: F, input: &'a str, value: T)
+where
+    F: FnOnce(std::io::Cursor<&'a str>) -> Result<T, Error>,
+    T: PartialEq + Debug,
+{
+    assert_eq!(solution(std::io::Cursor::new(input)).unwrap(), value)
 }
