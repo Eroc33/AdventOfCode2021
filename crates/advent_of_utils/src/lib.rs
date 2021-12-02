@@ -7,6 +7,7 @@ use std::{
     str::FromStr,
 };
 
+#[macro_export]
 macro_rules! bail {
     ($($fmt_args:tt)+) => {
         return Err(format!($($fmt_args)+).into());
