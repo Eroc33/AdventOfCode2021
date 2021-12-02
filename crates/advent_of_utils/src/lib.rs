@@ -42,15 +42,6 @@ pub fn input() -> Result<impl BufRead, Error> {
     }
 }
 
-pub fn input_lines_as<T>() -> Result<Vec<T>, Error>
-where
-    T: FromStr,
-    T::Err: Debug,
-{
-    let reader = input()?;
-    lines_as(reader)
-}
-
 pub fn lines_as<T, R>(reader: R) -> Result<Vec<T>, Error>
 where
     T: FromStr,
@@ -90,23 +81,6 @@ where
         .parse::<R>()
         .map_err(|e| format!("Right could not be parsed: {}", e))?;
     Ok((left, right))
-}
-
-pub fn input_grid<T>(
-    map_char: impl Fn(char) -> T,
-) -> Result<(HashMap<[usize; 2], T>, usize, usize), Error> {
-    let mut height = 0;
-    let mut width = 0;
-    let mut map = HashMap::new();
-    for (y, line) in input()?.lines().enumerate() {
-        let line = line.map_err(|e| format!("Error reading line {}: {}", y, e))?;
-        for (x, c) in line.chars().enumerate() {
-            map.insert([x, y], map_char(c));
-        }
-        width = width.max(line.len());
-        height = height.max(y);
-    }
-    Ok((map, width, height + 1))
 }
 
 pub fn check_example<'a, F, T>(solution: F, input: &'a str, value: T)
