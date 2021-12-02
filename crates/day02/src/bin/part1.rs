@@ -6,11 +6,8 @@ fn solution(input: impl BufRead) -> Result<u32, advent_of_utils::Error> {
     let mut depth = 0;
     let lines = advent_of_utils::lines_as::<String, _>(input)?;
     for line in lines {
-        let mut parts = line.split(' ');
-        let dir = parts.next().ok_or("Missing direction part")?;
-        let count = parts.next().ok_or("Missing count part")?;
-        let count = count.parse::<u32>()?;
-        match dir {
+        let (dir, count) = advent_of_utils::split_parse::<String, u32>(&line[..], " ")?;
+        match &dir[..] {
             "forward" => horiz += count,
             "up" => depth -= count,
             "down" => depth += count,
