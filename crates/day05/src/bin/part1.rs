@@ -2,17 +2,7 @@ use day05::*;
 use std::io::BufRead;
 
 fn solution(input: impl BufRead) -> Result<usize, advent_of_utils::Error> {
-    let lines = input
-        .lines()
-        .map(|line| {
-            let line = line?;
-            let line = line.trim();
-            let (from, to) = advent_of_utils::split_parse::<String, String>(line, " -> ")?;
-            let from = advent_of_utils::split_parse::<usize, usize>(&from, ",")?;
-            let to = advent_of_utils::split_parse::<usize, usize>(&to, ",")?;
-            Ok::<_, advent_of_utils::Error>((from, to))
-        })
-        .collect::<Result<Vec<_>, _>>()?;
+    let lines = parse_input(input)?;
 
     let candidates = lines
         .iter()
