@@ -47,3 +47,10 @@ version = "0.1.0"
 dependencies = [
  "advent_of_utils",
 ]
+
+[[package]]
+name = "day07"
+version = "0.1.0"
+dependencies = [
+ "advent_of_utils",
+]
