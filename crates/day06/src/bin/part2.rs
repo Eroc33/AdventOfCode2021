@@ -37,6 +37,6 @@ advent_of_utils::main!(solution);
 
 #[cfg(test)]
 #[test]
-fn day06_part1_example() {
+fn day06_part2_example() {
     advent_of_utils::check_example(solution, "3,4,3,1,2", 26984457539)
 }
