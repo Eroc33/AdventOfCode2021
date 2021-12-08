@@ -71,8 +71,7 @@ fn solution(input: impl BufRead) -> Result<u64, advent_of_utils::Error> {
             }
 
             let out_segs = out_segs.iter().map(|s| seg_map.get(s).ok_or(format!("Missing entry for {:?}", s))).collect::<Result<Vec<_>,_>>()?;
-            let out_seg_digits: Vec<_> = out_segs.into_iter().map(|i| i.to_string()).collect();
-            sum += out_seg_digits.concat().parse::<u64>()?;
+            sum += out_segs.into_iter().fold(0u64,|acc,digit| (*digit as u64)+acc*10);
     }
     
     Ok(sum)
