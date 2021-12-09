@@ -90,3 +90,24 @@ where
 {
     assert_eq!(solution(std::io::Cursor::new(input)).unwrap(), value)
 }
+
+pub fn parse_grid<T,R>(
+    reader: R,
+    map_char: impl Fn(char) -> T,
+) -> Result<(HashMap<[usize; 2], T>, usize, usize), Error>
+    where R: BufRead
+{
+    let mut height = 0;
+    let mut width = 0;
+    let mut map = HashMap::new();
+    for (y, line) in reader.lines().enumerate() {
+        let line = line.map_err(|e| format!("Error reading line {}: {}", y, e))?;
+        let line = line.trim();
+        for (x, c) in line.chars().enumerate() {
+            map.insert([x, y], map_char(c));
+        }
+        width = width.max(line.len());
+        height = height.max(y);
+    }
+    Ok((map, width, height + 1))
+}
