@@ -29,7 +29,7 @@ fn solution(input: impl BufRead) -> Result<usize, advent_of_utils::Error> {
             &[a,b] => [a,b],
             _other => panic!("Window size should be 2"),
         };
-        *acc.entry(c).or_insert(0) += 1;
+        *acc.entry(c).or_insert(0u64) += 1;
         acc
     });
 
@@ -55,12 +55,12 @@ fn solution(input: impl BufRead) -> Result<usize, advent_of_utils::Error> {
         *element_counts.entry(pair[1]).or_insert(0) += count;
     }
 
-    let element_counts: HashMap<_,_> = element_counts.into_iter().map(|(k,v)| (k, v/2)).collect();
+    let element_counts: HashMap<_,_> = element_counts.into_iter().map(|(k,v)| (k, (v as f64/2.0).ceil() as usize)).collect();
 
     let most_common = element_counts.values().max().ok_or("No most common element")?;
     let least_common = element_counts.values().min().ok_or("No least common element")?;
 
-    Ok((most_common - least_common) + 1)
+    Ok(most_common - least_common)
 }
 
 advent_of_utils::main!(solution);
