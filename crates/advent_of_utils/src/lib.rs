@@ -76,10 +76,10 @@ where
 
     let left = left
         .parse::<L>()
-        .map_err(|e| format!("Left could not be parsed: {}", e))?;
+        .map_err(|e| format!("Left ({:?}) could not be parsed: {}", left, e))?;
     let right = right
         .parse::<R>()
-        .map_err(|e| format!("Right could not be parsed: {}", e))?;
+        .map_err(|e| format!("Right ({:?}) could not be parsed: {}", right, e))?;
     Ok((left, right))
 }
 
