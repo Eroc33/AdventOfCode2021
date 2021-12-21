@@ -83,6 +83,39 @@ where
     Ok((left, right))
 }
 
+pub fn split_parse3<A, B, C>(s: &str, delim: &str) -> Result<(A, B, C), Error>
+where
+    A: FromStr,
+    A::Err: Display,
+    B: FromStr,
+    B::Err: Display,
+    C: FromStr,
+    C::Err: Display,
+{
+    let split = s
+        .find(delim)
+        .ok_or_else(|| format!("Expected {} in `{}`", delim, s))?;
+
+    let (a, rest) = s.split_at(split);
+    let rest = &rest[delim.len()..];
+    let split = rest
+        .find(delim)
+        .ok_or_else(|| format!("Expected {} in `{}`", delim, rest))?;
+    let (b, c) = rest.split_at(split);
+    let c = &c[delim.len()..];
+
+    let a = a
+        .parse::<A>()
+        .map_err(|e| format!("A ({:?}) could not be parsed: {}", a, e))?;
+    let b = b
+        .parse::<B>()
+        .map_err(|e| format!("B ({:?}) could not be parsed: {}", b, e))?;
+    let c = c
+        .parse::<C>()
+        .map_err(|e| format!("C ({:?}) could not be parsed: {}", c, e))?;
+    Ok((a, b, c))
+}
+
 pub fn check_example<'a, F, T>(solution: F, input: &'a str, value: T)
 where
     F: FnOnce(std::io::Cursor<&'a str>) -> Result<T, Error>,
